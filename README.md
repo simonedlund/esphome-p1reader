@@ -20,6 +20,10 @@ The circuit is very simple, basically the 5V TX output on the P1 connector is co
 ## Installation
 Clone the repository and update the [p1reader.yaml](p1reader.yaml) with your own settings (wifi SSID and password and API password). 
 
+If your electricity supplier is Tekniska Verken with an Aidon 6442SE, also change the instantiation of
+the auto_meter_sensor under `sensor`, as these meters at the time of writing use a different protocol. Customer service of Tekniska Verken claims that there will be a software update that makes the meters report data in the
+standardized ASCII format, but there is no timeline for this update.
+
 Prepare the microcontroller with ESPHome before you connect it to the circuit:
 - Install the `esphome` [command line tool](https://esphome.io/guides/getting_started_command_line.html)
 - Plug in the microcontroller to your USB port and run `esphome p1reader.yaml run` to flash the firmware

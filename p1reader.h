@@ -21,7 +21,7 @@
 #include "esphome.h"
 #include <math.h>
 
-#define BUF_SIZE 50
+#define BUF_SIZE 60
 
 class ParsedMessage {
   public:
@@ -275,11 +275,14 @@ class P1Reader : public Component, public UARTDevice {
       if (available()) {
         uint16_t crc = 0x0000;
         ParsedMessage parsed = ParsedMessage();
+        bool telegramEnded = false;
 
         while (available()) {
-          int len = readBytesUntil('\n', buffer, BUF_SIZE);
+          int len = Serial.readBytesUntil('\n', buffer, BUF_SIZE);
 
           if (len > 0) {
+          	ESP_LOGD("data", "%s", buffer);
+
             // put newline back as it is required for CRC calculation
             buffer[len] = '\n';
             buffer[len + 1] = '\0';
@@ -289,7 +292,8 @@ class P1Reader : public Component, public UARTDevice {
               crc = crc16_update(crc, buffer[0]);
               int crcFromMsg = (int) strtol(&buffer[1], NULL, 16);
               parsed.crcOk = crc == crcFromMsg;
-              ESP_LOGD("crc", "CRC: %04X = %04X. PASS = %s", crc, crcFromMsg, parsed.crcOk ? "YES": "NO");
+              ESP_LOGI("crc", "Telegram read. CRC: %04X = %04X. PASS = %s", crc, crcFromMsg, parsed.crcOk ? "YES": "NO");
+              telegramEnded = true;
 
             // otherwise pass the row through the CRC calculation
             } else {
@@ -314,6 +318,11 @@ class P1Reader : public Component, public UARTDevice {
           }
           // clean buffer
           memset(buffer, 0, BUF_SIZE - 1);
+        
+          if (!telegramEnded && !available()) {
+          	// wait for more data
+          	delay(40);
+          }
         }
 
         // if the CRC pass, publish sensor values

@@ -1,7 +1,7 @@
 # esphome-p1reader
 ESPHome custom component for reading P1 data from electricity meters. Designed for Swedish meters that implements the specification defined in the [Swedish Energy Industry Recommendation For Customer Interfaces](https://www.energiforetagen.se/forlag/elnat/branschrekommendation-for-lokalt-kundgranssnitt-for-elmatare/) version 1.3 and above.
 
-Please note that the project currently doesn't support the Aidon meter from Tekniska Verken since that meter outputs the data in a binary format according to an earlier version (1.2) of the above mentioned recommendation.
+Please note that the project *does* support the Aidon meter from Tekniska Verken, see configuration below.
 
 ## ESPHome version
 The current version in main is tested with ESPHome version `2021.12.0`. Make sure your ESPHome version is up to date if you experience compile problems.
@@ -12,6 +12,7 @@ The current version in main is tested with ESPHome version `2021.12.0`. Make sur
 * [Itron A300](https://boraselnat.se/elnat/elmatarbyte-2020-2021/sa-har-fungerar-din-nya-elmatare/) / Borås Elnät
 * [S34U18 (Sanxing SX631)](https://www.vattenfalleldistribution.se/matarbyte/nya-elmataren/) / Vattenfall 
 * [KAIFA MA304H4E](https://reko.nackaenergi.se/elmatarbyte/) / Nacka Energi
+* [Aidon 6442SE](https://www.tekniskaverken.se/privat/elnat/matning-av-din-elanvandning/din-elmatare/) / Tekniska Verken
 
 *Note:* There's currently a bug in the E360 firmware, causing it to stop sending out data after a while. Check this comment for more info: https://github.com/psvanstrom/esphome-p1reader/issues/4#issuecomment-810794020
 

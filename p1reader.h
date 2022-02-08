@@ -333,7 +333,7 @@ class P1Reader : public Component, public UARTDevice {
     }
 
     bool readHDLCStruct(ParsedMessage* parsed) {
-      if(readBytes(buffer, 3) != 3)
+      if(Serial.readBytes(buffer, 3) != 3)
         return false;
 
       if(buffer[0] != 0x02) {
@@ -353,7 +353,7 @@ class P1Reader : public Component, public UARTDevice {
       }
       
       uint8_t str_length = read();
-      if(readBytes(buffer, str_length) != str_length) {
+      if(Serial.readBytes(buffer, str_length) != str_length) {
         ESP_LOGE("hdlc", "Unable to read %d bytes of OBIS code", str_length);
         return false;
       }
@@ -367,7 +367,7 @@ class P1Reader : public Component, public UARTDevice {
       int32_t value = 0;
       if (tag == 0x09) {
         str_length = read();
-        if(readBytes(buffer, str_length) != str_length) {
+        if(Serial.readBytes(buffer, str_length) != str_length) {
           ESP_LOGE("hdlc", "Unable to read %d bytes of string", str_length);
           return false;
         }
@@ -375,18 +375,18 @@ class P1Reader : public Component, public UARTDevice {
         buffer[str_length] = 0;
         //ESP_LOGD("hdlc", "Read string length %d", str_length);
       } else if(tag == 0x06) {
-        readBytes(buffer, 4);
+        Serial.readBytes(buffer, 4);
         //uvalue = buffer[0] | buffer[1] << 8 | buffer[2] << 16 | buffer[3] << 24;
         uvalue = buffer[3] | buffer[2] << 8 | buffer[1] << 16 | buffer[0] << 24;
         //ESP_LOGD("hdlc", "Value of uvalue is %u", uvalue);
       } else if (tag == 0x10) {
-        readBytes(buffer, 2); 
+        Serial.readBytes(buffer, 2); 
         //value = buffer[0] | buffer[1] << 8; // 
         is_signed = true;
         value = buffer[1] | buffer[0] << 8;
         //ESP_LOGD("hdlc", "(Signed) Value of value is %d", value);
       } else if (tag == 0x12) {
-        readBytes(buffer, 2); 
+        Serial.readBytes(buffer, 2); 
         //uvalue = buffer[0] | buffer[1] << 8; // 
         uvalue = buffer[1] | buffer[0] << 8;
         //ESP_LOGD("hdlc", "(Unsigned) Value of uvalue is %u", uvalue);
@@ -397,7 +397,7 @@ class P1Reader : public Component, public UARTDevice {
       int8_t scaler;
       uint8_t unit;
       if(struct_len == 3) {
-        readBytes(buffer, 6);
+        Serial.readBytes(buffer, 6);
         scaler = buffer[3];
         unit = buffer[5];
         //ESP_LOGD("hdlc", "Scaler %u", scaler);
@@ -464,14 +464,14 @@ class P1Reader : public Component, public UARTDevice {
         if (parseHDLCState == FOUND_FRAME)
         {
           // Read various static HDLC Frame information we don't care about
-          int len = readBytes(buffer, 12);
+          int len = Serial.readBytes(buffer, 12);
           if (len != 12) {
             ESP_LOGE("hdlc", "Expected 12 bytes, got %d bytes - out of sync. Returning", len);
             parseHDLCState = OUTSIDE_FRAME;
             return;
           }
           // ESP_LOGD("hdlc", "Got %d HDLC bytes, now reading 4 Invoke ID And Priority bytes", len);          
-          len = readBytes(buffer, 4);
+          len = Serial.readBytes(buffer, 4);
           if (!len == 4 || buffer[0] != 0x40 || buffer[1] != 0x00 || buffer[2] != 0x00 || buffer[3] != 0x00)
           {
             ESP_LOGE("hdlc", "Expected 0x40 0x00 0x00 0x00, got %X %X %X %X - out of sync, returning.", buffer[0], buffer[1], buffer[2], buffer[3]);
@@ -482,7 +482,7 @@ class P1Reader : public Component, public UARTDevice {
 
         data = read(); // Expect length of time field, usually 0
         //ESP_LOGD("hdlc", "Length of datetime field is %d", data);
-        readBytes(buffer, data);
+        Serial.readBytes(buffer, data);
 
         data = read();      
         ESP_LOGD("hdlc", "Expect 0x01 (array tag), got %02X", data);

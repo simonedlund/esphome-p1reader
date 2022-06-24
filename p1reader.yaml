@@ -42,7 +42,7 @@ uart:
 sensor:
 - platform: custom
   lambda: |-
-    auto meter_sensor = new P1Reader(id(uart_bus), true);
+    auto meter_sensor = new P1Reader(id(uart_bus), false);
     App.register_component(meter_sensor);
     return {
       meter_sensor->cumulativeActiveImport,
